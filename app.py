@@ -49,8 +49,8 @@ server = app.server
 main_df = pd.read_pickle('dataframe_data/hosp_stars_dat.pkl')
 beds_max = np.nanmax(main_df['Beds'])
 
-what_if_df_2025 = pd.read_pickle('dataframe_data/2025_data_for_whatifs.pkl')
 what_if_df_2026 = pd.read_pickle('dataframe_data/2026_data_for_whatifs.pkl')
+what_if_df_2027 = pd.read_pickle('dataframe_data/2027_data_for_whatifs.pkl')
 
 ##############################################################################
 
@@ -131,9 +131,57 @@ def run_whatif(raw_data, pnum, yr):
         return df
 
     # Define the measures you're interested in
-    measures = []
-    rev_measures = []
-    if yr == 2026:
+    rev_measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
+                    'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE', 
+                    'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6',
+                    'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN',
+                    'OP_32', 'READM_30_CABG', 'READM_30_COPD', 
+                    'READM_30_HIP_KNEE', 'Hybrid_HWR', 'Hybrid_HWM',
+                    'OP_35_ADM', 'OP_35_ED', 'OP_36', 'OP_22',
+                    'OP_18B', 'OP_8', 
+                    'OP_10','OP_13', 'SAFE_USE_OF_OPIOIDS',
+                   ]
+    
+    measures = [
+        'MORT_30_AMI', 'MORT_30_CABG', 
+        'MORT_30_COPD', 'MORT_30_HF',
+        'MORT_30_PN', 'MORT_30_STK', 
+        'PSI_4_SURG_COMP', 'COMP_HIP_KNEE',
+        'HAI_1', 'HAI_2', 
+        'HAI_3', 'HAI_4', 
+        'HAI_5', 'HAI_6', 
+        'PSI_90_SAFETY', 'EDAC_30_AMI', 
+        'EDAC_30_HF', 'EDAC_30_PN', 
+        'OP_32', 'READM_30_CABG', 
+        'READM_30_COPD', 'READM_30_HIP_KNEE', 
+        'Hybrid_HWR', 
+        'Hybrid_HWM', # new
+        'OP_35_ADM', 
+        'OP_35_ED', 'OP_36', 
+        'O-COMP-1',
+        'O-COMP-2',
+        'O-COMP-3',
+        'O-PATIENT-RATE',
+        'O-PATIENT-REC',
+        'H_COMP_1_LINEAR_SCORE',
+        'H_COMP_2_LINEAR_SCORE',
+        'H_COMP_3_LINEAR_SCORE',
+        'H_COMP_5_LINEAR_SCORE',
+        'H_COMP_6_LINEAR_SCORE',
+        'H_COMP_7_LINEAR_SCORE',
+        'H_CLEAN_LINEAR_SCORE',
+        'H_QUIET_LINEAR_SCORE',
+        'H_RECMND_LINEAR_SCORE',
+        'H_HSP_RATING_LINEAR_SCORE',
+        'IMM_3', 'OP_10', 
+        'OP_13', 'OP_18B', 
+        'OP_22', 'OP_23', 
+        'OP_29', 'OP_8', 
+        'SEP_1', 'SAFE_USE_OF_OPIOIDS',
+        # lost PC-01 and HCP COVID-19
+       ]
+
+    if yr == 2027:
         measures = [
             'MORT_30_AMI', 'MORT_30_CABG', 
             'MORT_30_COPD', 'MORT_30_HF',
@@ -150,17 +198,17 @@ def run_whatif(raw_data, pnum, yr):
             'Hybrid_HWM', # new
             'OP_35_ADM', 
             'OP_35_ED', 'OP_36', 
-            'O_COMP_1_LINEAR_SCORE',
-            'O_COMP_2_LINEAR_SCORE',
-            'O_COMP_3_LINEAR_SCORE',
-            'O_PATIENT_RATE_LINEAR_SCORE',
-            'O_PATIENT_REC_LINEAR_SCORE',
+            'O-COMP-1',
+            'O-COMP-2',
+            'O-COMP-3',
+            'O-PATIENT-RATE',
+            'O-PATIENT-REC',
             'H_COMP_1_LINEAR_SCORE',
             'H_COMP_2_LINEAR_SCORE',
-            'H_COMP_3_LINEAR_SCORE',
+            #'H_COMP_3_LINEAR_SCORE',
             'H_COMP_5_LINEAR_SCORE',
             'H_COMP_6_LINEAR_SCORE',
-            'H_COMP_7_LINEAR_SCORE',
+            #'H_COMP_7_LINEAR_SCORE',
             'H_CLEAN_LINEAR_SCORE',
             'H_QUIET_LINEAR_SCORE',
             'H_RECMND_LINEAR_SCORE',
@@ -173,50 +221,6 @@ def run_whatif(raw_data, pnum, yr):
             # lost PC-01 and HCP COVID-19
            ]
         
-        rev_measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
-                        'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE', 
-                        'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6',
-                        'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN',
-                        'OP_32', 'READM_30_CABG', 'READM_30_COPD', 
-                        'READM_30_HIP_KNEE', 'Hybrid_HWR', 'Hybrid_HWM',
-                        'OP_35_ADM', 'OP_35_ED', 'OP_36', 'OP_22',
-                        'OP_18B', 'OP_8', 
-                        'OP_10','OP_13', 'SAFE_USE_OF_OPIOIDS',
-                       ]
-        
-    elif yr == 2025:
-        measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
-            'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE',
-            'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6', 
-            'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF',
-            'EDAC_30_PN', 'OP_32', 'READM_30_CABG', 'READM_30_COPD',
-            'READM_30_HIP_KNEE', 'READM_30_HOSP_WIDE', 'OP_35_ADM', 
-            'OP_35_ED', 'OP_36', 'H_COMP_1_STAR_RATING', 'H_COMP_2_STAR_RATING', 
-            'H_COMP_3_STAR_RATING', 'H_COMP_5_STAR_RATING', 
-            'H_COMP_6_STAR_RATING', 'H_COMP_7_STAR_RATING', 
-            'H_GLOB_STAR_RATING', 'H_INDI_STAR_RATING', 'HCP_COVID_19', 
-            'IMM_3', 'OP_10', 'OP_13', 'OP_18B', #'OP_2', 
-            'OP_22',
-            'OP_23', 'OP_29', #'OP_3B', 
-            'OP_8', 'PC_01', 'SEP_1',
-            'SAFE_USE_OF_OPIOIDS',
-           ]
-        
-        rev_measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
-                        'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE', 
-                        'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6',
-                        'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN',
-                        'OP_32', 'READM_30_CABG', 'READM_30_COPD', 
-                        'READM_30_HIP_KNEE', 'READM_30_HOSP_WIDE',
-                        'OP_35_ADM', 'OP_35_ED', 'OP_36', 'OP_22',
-                        'PC_01', 'OP_18B', 'OP_8', 
-                        'OP_10','OP_13', 'SAFE_USE_OF_OPIOIDS',
-                       ]
-    
-    else:
-        pass
-        #print('Error: yr is neither 2025 nor 2026')
-    
     filtered_data = raw_data.filter(items=['PROVIDER_ID']+measures)
     
     # remove any measure (column) that is not reported by at least 100 hospitals
@@ -248,27 +252,18 @@ def run_whatif(raw_data, pnum, yr):
     final_df['PROVIDER_ID'] = zscore_df['PROVIDER_ID']
     
     # Mortality measures
-    mort_measures = []
-    if yr == 2025:
-        mort_measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF', 
-                         'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP']
-    if yr == 2026:
-        mort_measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF', 
+    mort_measures = ['MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF', 
                          'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'Hybrid_HWM']
+    
     final_df['Std_Outcomes_Mortality_score'] = stats.zscore(zscore_df[mort_measures].mean(axis=1), ddof=ddof, nan_policy='omit')
     final_df['Outcomes_Mortality_cnt'] = zscore_df[mort_measures].apply(lambda row: row.notna().sum(), axis=1)
     
     
     # Readmission measures
-    readm_measures = []
-    if yr == 2025:
-        readm_measures = ['EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN', 'OP_32',
-                          'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE', 
-                          'READM_30_HOSP_WIDE', 'OP_35_ADM', 'OP_35_ED', 'OP_36']
-    elif yr == 2026:
-        readm_measures = ['EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN', 'OP_32',
-                          'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE', 
-                          'Hybrid_HWR', 'OP_35_ADM', 'OP_35_ED', 'OP_36']
+    readm_measures = ['EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN', 'OP_32',
+                      'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE', 
+                      'Hybrid_HWR', 'OP_35_ADM', 'OP_35_ED', 'OP_36']
+    
     final_df['Std_Outcomes_Readmission_score'] = stats.zscore(zscore_df[readm_measures].mean(axis=1), ddof=ddof, nan_policy='omit')
     final_df['Outcomes_Readmission_cnt'] = zscore_df[readm_measures].apply(lambda row: row.notna().sum(), axis=1)
     
@@ -281,25 +276,36 @@ def run_whatif(raw_data, pnum, yr):
     
     
     # Patient experience measures
-    patexp_measures = []
-    if yr == 2025: 
-        patexp_measures = ['H_COMP_1_STAR_RATING', 'H_COMP_2_STAR_RATING', 
-                           'H_COMP_3_STAR_RATING', 'H_COMP_5_STAR_RATING', 
-                           'H_COMP_6_STAR_RATING', 'H_COMP_7_STAR_RATING', 
-                           'H_GLOB_STAR_RATING', 'H_INDI_STAR_RATING']
-    elif yr == 2026:
+    patexp_measures = [
+        'O-COMP-1',
+        'O-COMP-2',
+        'O-COMP-3',
+        'O-PATIENT-RATE',
+        'O-PATIENT-REC',
+        'H_COMP_1_LINEAR_SCORE',
+        'H_COMP_2_LINEAR_SCORE',
+        'H_COMP_3_LINEAR_SCORE',
+        'H_COMP_5_LINEAR_SCORE',
+        'H_COMP_6_LINEAR_SCORE',
+        'H_COMP_7_LINEAR_SCORE',
+        'H_CLEAN_LINEAR_SCORE',
+        'H_QUIET_LINEAR_SCORE',
+        'H_RECMND_LINEAR_SCORE',
+        'H_HSP_RATING_LINEAR_SCORE',
+    ]
+    if yr == 2027:
         patexp_measures = [
-            'O_COMP_1_LINEAR_SCORE',
-            'O_COMP_2_LINEAR_SCORE',
-            'O_COMP_3_LINEAR_SCORE',
-            'O_PATIENT_RATE_LINEAR_SCORE',
-            'O_PATIENT_REC_LINEAR_SCORE',
+            'O-COMP-1',
+            'O-COMP-2',
+            'O-COMP-3',
+            'O-PATIENT-RATE',
+            'O-PATIENT-REC',
             'H_COMP_1_LINEAR_SCORE',
             'H_COMP_2_LINEAR_SCORE',
-            'H_COMP_3_LINEAR_SCORE',
+            #'H_COMP_3_LINEAR_SCORE',
             'H_COMP_5_LINEAR_SCORE',
             'H_COMP_6_LINEAR_SCORE',
-            'H_COMP_7_LINEAR_SCORE',
+            #'H_COMP_7_LINEAR_SCORE',
             'H_CLEAN_LINEAR_SCORE',
             'H_QUIET_LINEAR_SCORE',
             'H_RECMND_LINEAR_SCORE',
@@ -311,22 +317,10 @@ def run_whatif(raw_data, pnum, yr):
     
     
     # Timely effective care measures
-    proc_measures = []
-    if yr == 2025:
-        proc_measures = ['HCP_COVID_19', 
-                         'IMM_3', 'OP_10', 'OP_13', 'OP_18B',
+    proc_measures = ['IMM_3', 'OP_10', 'OP_13', 'OP_18B',
                          'SAFE_USE_OF_OPIOIDS',
                          'OP_22', 'OP_23', 'OP_29', 
                          'OP_8', 
-                         'PC_01', 
-                         'SEP_1']
-    elif yr == 2026:
-        proc_measures = [#'HCP_COVID_19' <-- retired
-                         'IMM_3', 'OP_10', 'OP_13', 'OP_18B',
-                         'SAFE_USE_OF_OPIOIDS',
-                         'OP_22', 'OP_23', 'OP_29', 
-                         'OP_8', 
-                         #'PC_01' <-- retired
                          'SEP_1']
         
     final_df['Std_Process_score'] = stats.zscore(zscore_df[proc_measures].mean(axis=1), ddof=ddof, nan_policy='omit')
@@ -375,23 +369,7 @@ def run_whatif(raw_data, pnum, yr):
     
     # Add standard group measure weights
     weights_info = {}
-    if yr == 2025:
-        final_df['std_weight_PatientExperience'] = 0.22
-        final_df['std_weight_Readmission'] = 0.22
-        final_df['std_weight_Mortality'] = 0.22
-        final_df['std_weight_safety'] = 0.22
-        final_df['std_weight_Process'] = 0.12
-        
-        # Standard weights and their corresponding score columns
-        weights_info = {
-            'Std_PatientExp_score': ('weight_PatientExperience', 0.22),
-            'Std_Outcomes_Readmission_score': ('weight_Outcomes_Readmission', 0.22),
-            'Std_Outcomes_Mortality_score': ('weight_Outcomes_Mortality', 0.22),
-            'Std_Outcomes_Safety_score': ('weight_Outcomes_Safety', 0.22),
-            'Std_Process_score': ('weight_Process', 0.12)
-        }
-        
-    elif yr == 2026: # ALL OF THESE WEIGHTS ARE CORRECT
+    if yr == 2026 or yr == 2027: # ALL OF THESE WEIGHTS ARE CORRECT
         final_df['std_weight_PatientExperience'] = 0.22
         final_df['std_weight_Readmission'] = 0.22
         final_df['std_weight_Mortality'] = 0.22
@@ -461,23 +439,24 @@ def run_whatif(raw_data, pnum, yr):
     complete_df = pd.concat([dfg3, dfg4, dfg5])
     
     if yr == 2026:
-        # ---------------------------------------------------------
-        # 2026 rule:
-        # Any hospital with 5 stars AND in the bottom quartile of
-        # Std_Outcomes_Safety_score is downgraded to 4 stars.
-        # ---------------------------------------------------------
-
-        # Compute safety-score bottom quartile (25th percentile)
         safety_q1 = complete_df['Std_Outcomes_Safety_score'].quantile(0.25)
 
-        # Identify hospitals to downgrade
         downgrade_mask = (
             (complete_df['star'] == 5) &
             (complete_df['Std_Outcomes_Safety_score'] <= safety_q1)
         )
 
-        # Apply downgrade
         complete_df.loc[downgrade_mask, 'star'] = 4
+
+    if yr == 2027:
+        safety_q1 = complete_df['Std_Outcomes_Safety_score'].quantile(0.25)
+
+        downgrade_mask = (
+            (complete_df['star'] >= 2) &
+            (complete_df['Std_Outcomes_Safety_score'] <= safety_q1)
+        )
+
+        complete_df.loc[downgrade_mask, 'star'] -= 1
         
     #tdf1 = complete_df[~complete_df['star'].isin([np.nan, float("NaN")])]
     
@@ -667,11 +646,11 @@ feature_dict['Patient Experience'] = [
     'H_COMP_7_STAR_RATING',
     'H_GLOB_STAR_RATING', # H-HSP-RATING + H-RECMND / 2
     'H_INDI_STAR_RATING', # H-CLEAN-HSP + H-QUIET-HSP / 2
-    'O_COMP_1_LINEAR_SCORE',
-    'O_COMP_2_LINEAR_SCORE',
-    'O_COMP_3_LINEAR_SCORE',
-    'O_PATIENT_RATE_LINEAR_SCORE',
-    'O_PATIENT_REC_LINEAR_SCORE',
+    'O-COMP-1',
+    'O-COMP-2',
+    'O-COMP-3',
+    'O-PATIENT-RATE',
+    'O-PATIENT-REC',
     'H_COMP_1_LINEAR_SCORE',
     'H_COMP_2_LINEAR_SCORE',
     'H_COMP_3_LINEAR_SCORE',
@@ -693,11 +672,11 @@ feature_dict['Patient Experience (std)'] = [
     'std_H_COMP_7_STAR_RATING', 
     'std_H_GLOB_STAR_RATING', 
     'std_H_INDI_STAR_RATING',
-    'std_O_COMP_1_LINEAR_SCORE',
-    'std_O_COMP_2_LINEAR_SCORE',
-    'std_O_COMP_3_LINEAR_SCORE',
-    'std_O_PATIENT_RATE_LINEAR_SCORE',
-    'std_O_PATIENT_REC_LINEAR_SCORE',
+    'std_O-COMP-1',
+    'std_O-COMP-2',
+    'std_O-COMP-3',
+    'std_O-PATIENT-RATE',
+    'std_O-PATIENT-REC',
     'std_H_COMP_1_LINEAR_SCORE',
     'std_H_COMP_2_LINEAR_SCORE',
     'std_H_COMP_3_LINEAR_SCORE',
@@ -2227,7 +2206,6 @@ def update_hospitals(bed_range, n_clicks1, n_clicks3, n_clicks4, states_vals, ht
     if high == 2700:
         high = beds_max
     
-    #print('HOSPITALS:', len(HOSPITALS))
     hospitals = []
     for i, h in enumerate(HOSPITALS):
         
@@ -2239,7 +2217,6 @@ def update_hospitals(bed_range, n_clicks1, n_clicks3, n_clicks4, states_vals, ht
             if s in states_vals and ht in htype_vals and ct in ctype_vals:
                     hospitals.append(h)
                     
-    #print('hospitals:', len(hospitals))                    
     hospitals = sorted(list(set(hospitals)))
     hospitals_full = sorted(list(set(HOSPITALS)))
     out_ls2 = [{"label": i, "value": i} for i in hospitals_full]
@@ -2702,6 +2679,13 @@ def update_domains_table(hospital, option_hospitals, selected_hosps_btn, stars_p
         yr1 = int(yr)
         yr2 = None
         
+        if yr1 == 2027:
+            yr2 = 2026
+            if yr2 in yrs:
+                pass
+            else:
+                yr2 = 2025
+                
         if yr1 == 2026:
             yr2 = 2025
             if yr2 in yrs:
@@ -3031,6 +3015,13 @@ def update_domains_table(hospital, option_hospitals, selected_hosps_btn, stars_p
         yrs = sorted(hosp_df['Release year'].unique().tolist())
         yr1 = int(yr)
         
+        if yr1 == 2027:
+            yr2 = 2026
+            if yr2 in yrs:
+                pass
+            else:
+                yr2 = 2025
+                
         if yr1 == 2026:
             yr2 = 2025
             if yr2 in yrs:
@@ -3351,6 +3342,13 @@ def update_panel4(hospital, option_hospitals, selected_hosps_btn, stars_peers_bt
     yr1 = int(yr)
     yr2 = int()
     
+    if yr1 == 2027:
+        yr2 = 2026
+        if yr2 in yrs:
+            pass
+        else:
+            yr2 = 2025
+            
     if yr1 == 2026:
         yr2 = 2025
         if yr2 in yrs:
@@ -3522,6 +3520,9 @@ def update_panel4(hospital, option_hospitals, selected_hosps_btn, stars_peers_bt
         for ii, m in enumerate(measure_ls):
             try:
                 ls = tdf_main_PY[m].tolist()
+                if ls is None or ls == [] or len(ls) == 0:
+                    continue
+                
                 i_score = ls[i]
                 hosp_scors_PY.append(i_score)
                 ls = [x for x in ls if x == x]
@@ -3577,7 +3578,8 @@ def update_panel4(hospital, option_hospitals, selected_hosps_btn, stars_peers_bt
                                                'Percentile', 'Delta percentile', 
                                                ], inplace=True)
     
-    if score_type == 'Standardized scores':        
+    if score_type == 'Standardized scores':  
+        
         dashT = dash_table.DataTable(
             data=df_table.to_dict('records'), columns=[{'id': c, 'name': c} for c in df_table.columns],
             export_format="csv", page_action='none', sort_action="native", sort_mode="multi", #filter_action="native",
@@ -3627,7 +3629,7 @@ def update_panel4(hospital, option_hospitals, selected_hosps_btn, stars_peers_bt
                     }]
             ) 
     
-    else:        
+    else:
         dashT = dash_table.DataTable(
             data=df_table.to_dict('records'), columns=[{'id': c, 'name': c} for c in df_table.columns],
             export_format="csv", page_action='none', sort_action="native", sort_mode="multi", #filter_action="native",
@@ -4015,24 +4017,55 @@ def update_whatif_table(hospital, n_clicks, yr):
     
     measures = []
     domains = []
-          
+    
     m1 = [
-        'H_COMP_1_STAR_RATING', 'H_COMP_2_STAR_RATING',
-        'H_COMP_3_STAR_RATING', 'H_COMP_5_STAR_RATING', 
-        'H_COMP_6_STAR_RATING', 'H_COMP_7_STAR_RATING', 
-        'H_GLOB_STAR_RATING', 'H_INDI_STAR_RATING',
+        'H_CLEAN_LINEAR_SCORE', 
+        'H_COMP_1_LINEAR_SCORE', 
+        'H_COMP_2_LINEAR_SCORE', 
+        'H_COMP_3_LINEAR_SCORE', 
+        'H_COMP_5_LINEAR_SCORE', 
+        'H_COMP_6_LINEAR_SCORE', 
+        'H_COMP_7_LINEAR_SCORE', 
+        'H_HSP_RATING_LINEAR_SCORE', 
+        'H_QUIET_LINEAR_SCORE', 
+        'H_RECMND_LINEAR_SCORE',
+        'O-COMP-1',
+        'O-COMP-2',
+        'O-COMP-3',
+        'O-PATIENT-RATE',
+        'O-PATIENT-REC',
         ]
+    if yr == 2027:
+        m1 = [
+            'H_CLEAN_LINEAR_SCORE', 
+            'H_COMP_1_LINEAR_SCORE', 
+            'H_COMP_2_LINEAR_SCORE', 
+            #'H_COMP_3_LINEAR_SCORE', 
+            'H_COMP_5_LINEAR_SCORE', 
+            'H_COMP_6_LINEAR_SCORE', 
+            #'H_COMP_7_LINEAR_SCORE', 
+            'H_HSP_RATING_LINEAR_SCORE', 
+            'H_QUIET_LINEAR_SCORE', 
+            'H_RECMND_LINEAR_SCORE',
+            'O-COMP-1',
+            'O-COMP-2',
+            'O-COMP-3',
+            'O-PATIENT-RATE',
+            'O-PATIENT-REC',
+            ]
+        
+        
     domains.extend(['Patient Experience']*len(m1))
     measures.extend(m1)
     
     m2 = []
-    if yr == 2025:
+    if yr == 2026:
         m2 = [
             'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN', 'OP_32',
             'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE',
-            'READM_30_HOSP_WIDE', 'OP_35_ADM', 'OP_35_ED', 'OP_36',
+            'Hybrid_HWR', 'OP_35_ADM', 'OP_35_ED', 'OP_36',
             ]
-    elif yr == 2026:
+    if yr == 2027:
         m2 = [
             'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN', 'OP_32',
             'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE',
@@ -4044,7 +4077,7 @@ def update_whatif_table(hospital, n_clicks, yr):
     
     m3 = [
         'MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF', 
-        'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP',
+        'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'Hybrid_HWM',
         ]
     domains.extend(['Mortality']*len(m3))
     measures.extend(m3)
@@ -4055,54 +4088,27 @@ def update_whatif_table(hospital, n_clicks, yr):
     domains.extend(['Safety of Care']*len(m4))
     measures.extend(m4)
     
-    m5 = []
-    if yr == 2025:
-        m5 = [
-            'HCP_COVID_19', 
-            'IMM_3', 'OP_10', 'OP_13', 'OP_18B',
-            'OP_22', 'OP_23', 'OP_29',
-            'OP_8', 
-            'PC_01', 
-            'SEP_1', 
-            'SAFE_USE_OF_OPIOIDS',
-            ]
-        
-        rev_measures = [
-            'MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
-            'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE', 
-            'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6',
-            'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN',
-            'OP_32', 'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE', 
-            'READM_30_HOSP_WIDE', 'OP_35_ADM', 'OP_35_ED', 'OP_36', 'OP_22',
-            'PC_01', 
-            'OP_18B', 'OP_8', 'OP_10','OP_13', 
-            'SAFE_USE_OF_OPIOIDS',
-            ]
-        
-    elif yr == 2026:
-        m5 = [
-            #'HCP_COVID_19', 
-            'IMM_3', 'OP_10', 'OP_13', 'OP_18B',
-            'OP_22', 'OP_23', 'OP_29',
-            'OP_8', 
-            #'PC_01', 
-            'SEP_1', 
-            'SAFE_USE_OF_OPIOIDS',
-            ]
-        
-        rev_measures = [
-            'MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
-            'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE', 
-            'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6',
-            'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN',
-            'OP_32', 'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE', 
-            'Hybrid_HWR', 
-            'OP_35_ADM', 'OP_35_ED', 'OP_36', 'OP_22',
-            #'PC_01', 
-            'OP_18B', 'OP_8', 'OP_10','OP_13', 
-            'SAFE_USE_OF_OPIOIDS',
-            ]
+    m5 = [
+        'IMM_3', 'OP_10', 'OP_13', 'OP_18B',
+        'OP_22', 'OP_23', 'OP_29',
+        'OP_8', 
+        'SEP_1', 
+        'SAFE_USE_OF_OPIOIDS',
+        ]
     
+    rev_measures = [
+        'MORT_30_AMI', 'MORT_30_CABG', 'MORT_30_COPD', 'MORT_30_HF',
+        'MORT_30_PN', 'MORT_30_STK', 'PSI_4_SURG_COMP', 'COMP_HIP_KNEE', 
+        'HAI_1', 'HAI_2', 'HAI_3', 'HAI_4', 'HAI_5', 'HAI_6',
+        'PSI_90_SAFETY', 'EDAC_30_AMI', 'EDAC_30_HF', 'EDAC_30_PN',
+        'OP_32', 'READM_30_CABG', 'READM_30_COPD', 'READM_30_HIP_KNEE', 
+        'Hybrid_HWR', 
+        'Hybrid_HWM',
+        'OP_35_ADM', 'OP_35_ED', 'OP_36', 'OP_22',
+        'OP_18B', 'OP_8', 'OP_10','OP_13', 
+        'SAFE_USE_OF_OPIOIDS',
+        ]
+        
     domains.extend(['Timely & Effective Care']*len(m5))
     measures.extend(m5)
     
@@ -4217,17 +4223,16 @@ def update_whatif_analysis(n_clicks, data, columns, hospital, filtered_hospitals
     pnum = pnum.group()
     
     tdf = None
-    if yr == 2025:
-        tdf = what_if_df_2025.copy()
-    elif yr == 2026:
+    if yr == 2026:
         tdf = what_if_df_2026.copy()
+    elif yr == 2027:
+        tdf = what_if_df_2027.copy()
         
     measures = df['Measure-ID'].tolist()
     vals = df['What-if value'].tolist()
     for i, m in enumerate(measures):
         tdf.loc[tdf['PROVIDER_ID'] == pnum, m] = vals[i]
-        #print(pnum, '|', m, ':', vals[i])
-
+        
     stars_output_df = run_whatif(tdf, pnum, yr)
     
     tdf = stars_output_df[stars_output_df['PROVIDER_ID'] == pnum]
@@ -4263,7 +4268,7 @@ def update_whatif_analysis(n_clicks, data, columns, hospital, filtered_hospitals
             p2 = prvdrs2[i]
             if p1 != p2:
                 pass
-                #print('Error, p1 != p2:', p1, p2)
+                
                 
     txt1 = ''
     txt2 = ''
