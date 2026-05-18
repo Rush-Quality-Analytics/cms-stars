@@ -2440,8 +2440,8 @@ def update_boxes(hospital, filtered_hospitals, year):
     else:
         txt1 = name1 + " did not receive a star rating in " + str(year)
     
-    if year == 2026:
-        txt6 = 'Predictions for 2026: Distribution of Stars summary scores'
+    if year == 2027:
+        txt6 = 'Predictions for 2027: Distribution of Stars summary scores'
     else:
         txt6 = 'Results for ' + str(year) + ": Distribution of Stars summary scores"
         
